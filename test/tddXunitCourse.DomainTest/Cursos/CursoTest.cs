@@ -1,29 +1,29 @@
 using tddXunitCourse.Domain.Entidades;
+using tddXunitCourse.DomainTest._Builders;
 using tddXunitCourse.DomainTest._Util;
 
 namespace tddXunitCourse.DomainTest.Cursos;
 
 public class CursoTest
 {
+    private readonly CursoBuilder _cursoBuilder;
+
+    public CursoTest()
+    {
+        _cursoBuilder = CursoBuilder.Novo();
+    }
 
     [Fact]
     public void DadoQueDadosSaoValidos_DeveCriarCurso()
     {
         //Arrange
-        var cursoEsperado = new
-        {
-            Nome = "Curso de Testes Unitários",
-            Descricao = "Aprenda a escrever testes unitários eficazes.",
-            CargaHoraria = 40,
-            Preco = 199.99m,
-            Ativo = true
-        };
+        var cursoEsperado = _cursoBuilder;
 
         //Act 
-        var curso = new Curso(cursoEsperado.Nome, cursoEsperado.Descricao, cursoEsperado.CargaHoraria, cursoEsperado.Preco, cursoEsperado.Ativo);
+        var cursoCriado = new Curso(cursoEsperado.Build());
 
         //Assert
-        AssertExtension.ObjetoEquivalente(cursoEsperado, curso);
+        AssertExtension.ObjetoEquivalente(cursoEsperado, cursoCriado);
     }
 
     [Theory]
@@ -32,17 +32,8 @@ public class CursoTest
     public void DadoQueNomeEInvalido_DeveRetornarExcecao(string nomeInvalido)
     {
         //Arrange
-        var cursoEsperado = new
-        {
-            Nome = "Curso de Testes Unitários",
-            Descricao = "Aprenda a escrever testes unitários eficazes.",
-            CargaHoraria = 40,
-            Preco = 199.99m,
-            Ativo = true
-        };
-
         //Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new Curso(nomeInvalido, cursoEsperado.Descricao, cursoEsperado.CargaHoraria, cursoEsperado.Preco, cursoEsperado.Ativo))
+        Assert.Throws<ArgumentNullException>(() => _cursoBuilder.ComNome(nomeInvalido).Build())
              .ComMensagem("O nome do curso não pode ser nulo ou vazio.");
     }
 
@@ -53,35 +44,20 @@ public class CursoTest
     public void DadoQueCargaHorariaInvalida_DeveRetornarExcecao(int cargaHorariaInvalida)
     {
         //Arrange
-        var cursoEsperado = new
-        {
-            Nome = "Curso de Testes Unitários",
-            Descricao = "Aprenda a escrever testes unitários eficazes.",
-            Preco = 199.99m,
-            Ativo = true
-        };
-
-        //Act
         //Act & Assert
-        Assert.Throws<ArgumentException>(() => new Curso(cursoEsperado.Nome, cursoEsperado.Descricao, cargaHorariaInvalida, cursoEsperado.Preco, cursoEsperado.Ativo))
+        Assert.Throws<ArgumentException>(() => _cursoBuilder.ComCargaHoraria(cargaHorariaInvalida).Build())
              .ComMensagem("A carga horária deve ser maior que zero.");
     }
 
-    [Fact]
-    public void DadoQuePrecoInvalido_DeveRetornarExcecao()
+    [Theory]
+    [InlineData(-2.3)]
+    [InlineData(-0.3)]
+    [InlineData(-100)]
+    public void DadoQuePrecoInvalido_DeveRetornarExcecao(double precoInvalido)
     {
         //Arrange
-        var cursoEsperado = new
-        {
-            Nome = "Curso de Testes Unitários",
-            Descricao = "Aprenda a escrever testes unitários eficazes.",
-            CargaHoraria = 40,
-            Preco = -2,
-            Ativo = true
-        };
-
         //Act & Assert
-        Assert.Throws<ArgumentException>(() => new Curso(cursoEsperado.Nome, cursoEsperado.Descricao, cursoEsperado.CargaHoraria, cursoEsperado.Preco, cursoEsperado.Ativo))
+        Assert.Throws<ArgumentException>(() => _cursoBuilder.ComPreco(precoInvalido).Build())
             .ComMensagem("O preço do curso não pode ser negativo.");
     }
 }
