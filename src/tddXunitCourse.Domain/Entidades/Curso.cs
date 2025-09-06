@@ -15,7 +15,7 @@ public class Curso
     public Curso(string nome, string descricao, int cargaHoraria, decimal preco, bool ativo)
     {
         if (string.IsNullOrWhiteSpace(nome))
-            throw new ArgumentException("O nome do curso não pode ser nulo ou vazio.", nameof(nome));
+            throw new ArgumentNullException(nameof(nome), "O nome do curso não pode ser nulo ou vazio.");
 
         if (cargaHoraria <= 0)
             throw new ArgumentException("A carga horária deve ser maior que zero.", nameof(cargaHoraria));
